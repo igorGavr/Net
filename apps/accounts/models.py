@@ -13,6 +13,7 @@ class User(AbstractUser):
     )
     birthday = models.DateField("Дата рождения", null=True)
     phone = models.CharField("Номер телефона", max_length=14,null=True)
+    is_private = models.BooleanField(default=False)
 
 
 

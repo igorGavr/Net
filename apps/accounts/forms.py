@@ -57,3 +57,36 @@ class UserRegisterForm(UserCreationForm):
                 }
             ),
         }
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            "avatar",
+            "email",
+            "first_name",
+            "last_name",
+            "birthday",
+            "phone",
+            "is_private",
+        ]
+        form_control = {"class": "form-control"}
+        widgets={
+            "avatar": forms.FileInput(attrs=form_control),
+            "email": forms.EmailInput(attrs=form_control),
+            "first_name": forms.TextInput(attrs=form_control),
+            "last_name": forms.TextInput(attrs=form_control),
+            "phone": forms.TextInput(attrs=form_control),
+            "birthday": forms.DateInput(
+                attrs={
+                    "class": "form-control",
+                    "type": "date"
+                }
+            ),
+            "is_private": forms.CheckboxInput(
+                attrs={
+                    "class": "form-check-input",
+                }
+            )
+        }

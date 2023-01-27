@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
-from .forms import LoginForm, UserRegisterForm
-from django.views.generic import FormView, CreateView
+from .forms import LoginForm, UserRegisterForm, UserUpdateForm
+from django.views.generic import FormView, CreateView, UpdateView
 from django.contrib.auth  import authenticate, login, logout
 from django.http import HttpResponse
 from django.urls import reverse_lazy
+
+from .models import User
 
 
 class LoginView(FormView):
@@ -33,3 +35,12 @@ def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect("index")
+
+
+class UpdateUserView(UpdateView):
+    template_name = "profile.html"
+    form_class = UserUpdateForm
+    success_url = reverse_lazy("index")
+
+    def get_object(self):
+        return self.request.user
