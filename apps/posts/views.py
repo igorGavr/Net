@@ -1,9 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponse
-from django.views.generic import TemplateView, ListView, CreateView
+from django.views.generic import TemplateView, ListView, CreateView, DetailView
 
 # Create your views here
+
+
 from apps.posts.models import Post
 from .forms import PostCreateForm
 
@@ -22,7 +24,7 @@ class UserPostsView(ListView):
     model = Post
 
     def get_queryset(self):
-        posts = Post.objects.filter(is_archive=False, author=self.request.user)
+        posts = Post.objects.filter(author=self.request.user)
         return posts
 
     def get_context_data(self, **kwargs):
@@ -42,3 +44,24 @@ class PostCreateView(CreateView):
         post.save()
         return super().form_valid(form)
 
+
+class PostDetailView(DetailView):
+    template_name = "post_details.html"
+    model = Post
+    queryset = Post.objects.all()
+
+
+def archivate_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if not post.is_archive:
+        post.is_archive = True
+        post.save()
+    return redirect("user_posts")
+
+
+def unarchivate_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if post.is_archive:
+        post.is_archive = False
+        post.save()
+    return redirect("user_posts")
