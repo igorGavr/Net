@@ -1,11 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import LoginForm, UserRegisterForm, UserUpdateForm
-from django.views.generic import FormView, CreateView, UpdateView
+from django.views.generic import FormView, CreateView, UpdateView, ListView, DetailView
 from django.contrib.auth  import authenticate, login, logout
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-
-from .models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
+from .models import User, Follow
 
 
 class LoginView(FormView):
@@ -44,3 +45,53 @@ class UpdateUserView(UpdateView):
 
     def get_object(self):
         return self.request.user
+
+
+class UsersSearchListView(ListView):
+    template_name = "users.html"
+    model = User
+
+    def get_queryset(self):
+        search_text = self.request.GET.get("query")
+        if search_text:
+            search_users = User.objects.filter(username__icontains=search_text)
+            return search_users
+        return None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_text"] = self.request.GET.get("query")
+        return context
+
+
+class UserProfileView(LoginRequiredMixin, DetailView):
+    template_name = "user_profile.html"
+    model = User
+    queryset = User.objects.all()
+
+
+class FollowUser(LoginRequiredMixin, View):
+
+    def get(self, request, user_pk):
+        from_user = request.user
+        to_user = get_object_or_404(User, pk=user_pk)
+        if from_user not in to_user.followers.all():
+            Follow.objects.create(
+                to_user=to_user,
+                from_user=from_user
+            )
+        return redirect("index")
+
+
+class UnfollowUser(LoginRequiredMixin, View):
+
+    def get(self, request, user_pk):
+        from_user = request.user
+        to_user = get_object_or_404(User, pk=user_pk)
+        if from_user in to_user.followers.all():
+            follow = Follow.objects.get(
+                from_user=from_user,
+                to_user__id = user_pk
+            )
+            follow.delete()
+        return redirect("index")

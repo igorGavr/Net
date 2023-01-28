@@ -60,16 +60,18 @@ def archivate_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if not post.is_archive:
         post.is_archive = True
-        post.save()
-    return redirect("user_posts")
-
-
-def unarchivate_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if post.is_archive:
+    else:
         post.is_archive = False
-        post.save()
+    post.save()
     return redirect("user_posts")
+
+
+# def unarchivate_post(request, pk):
+#     post = get_object_or_404(Post, pk=pk)
+#     if post.is_archive:
+#         post.is_archive = False
+#         post.save()
+#     return redirect("user_posts")
 
 
 def delete_post(request, pk):
