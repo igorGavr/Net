@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from .models import User
+from django.contrib import messages
 
 
 class LoginView(FormView):
@@ -76,6 +77,7 @@ class FollowUser(LoginRequiredMixin, View):
         from_user = request.user
         to_user = get_object_or_404(User, pk=user_pk)
         if from_user not in to_user.followers.all():
+            messages.add_message(request, messages.SUCCESS, "вы успешно подписались")
             to_user.followers.add(from_user)
         return redirect("index")
 
@@ -86,5 +88,6 @@ class UnfollowUser(LoginRequiredMixin, View):
         from_user = request.user
         to_user = get_object_or_404(User, pk=user_pk)
         if from_user in to_user.followers.all():
+            messages.add_message(request, messages.SUCCESS, "вы успешно отписались")
             to_user.followers.remove(from_user)
         return redirect("index")
