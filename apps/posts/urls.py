@@ -2,11 +2,11 @@ from django.urls import path
 from apps.posts.views import (
     IndexPage, UserPostsView, PostCreateView, PostDetailView,
     archivate_post, delete_post,
-    PostUpdateView
+    PostUpdateView, FollowinPostsView
 )
 
 urlpatterns = [
-    path("", IndexPage.as_view(), name="index"),
+    path("", FollowinPostsView.as_view(), name="index"),
     path("user_posts/", UserPostsView.as_view(), name="user_posts"),
     path("create_post/", PostCreateView.as_view(), name="create_post"),
     path("post/detail/<int:pk>/", PostDetailView.as_view(), name="post_detail"),

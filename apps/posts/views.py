@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here
 
 
@@ -90,3 +90,20 @@ class PostUpdateView(UpdateView):
         return reverse_lazy("post_detail", kwargs={"pk":pk})
 
 
+class FollowinPostsView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = "following_posts.html"
+
+    def get_queryset(self):
+        # наші підписки
+        following = self.request.user.following.all()
+        posts = Post.objects.filter(
+            author__in=following,
+            is_archive=False
+        )
+        return posts
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = PostCreateForm()
+        return context
