@@ -2,7 +2,7 @@ from django.urls import path
 from apps.posts.views import (
     IndexPage, UserPostsView, PostCreateView, PostDetailView,
     archivate_post, delete_post,
-    PostUpdateView, FollowinPostsView
+    PostUpdateView, FollowinPostsView, like_post, unlike_post
 )
 
 urlpatterns = [
@@ -14,4 +14,7 @@ urlpatterns = [
     # path("post/unarchivate/<int:pk>/", unarchivate_post, name="unarchivate_post"),
     path("post/delete/<int:pk>/", delete_post, name="delete_post"),
     path("post/update/<int:pk>/", PostUpdateView.as_view(), name="update_post"),
+
+    path("post/like/<int:post_pk>/", like_post, name="like_post"),
+    path("post/unlike/<int:post_pk>/", unlike_post, name="unlike_post"),
 ]

@@ -3,6 +3,9 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+
+
 # Create your views here
 
 
@@ -107,3 +110,21 @@ class FollowinPostsView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["form"] = PostCreateForm()
         return context
+
+
+@login_required
+def like_post(request, post_pk):
+    post = get_object_or_404(Post, id=post_pk)
+    user = request.user
+    post.likes.add(user)
+    post.save()
+    return redirect("index")
+
+
+@login_required
+def unlike_post(request, post_pk):
+    post = get_object_or_404(Post,id=post_pk)
+    user = request.user
+    if user in post.likes.all():
+        post.likes.remove(user)
+    return redirect("index")
