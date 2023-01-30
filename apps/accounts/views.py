@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import LoginForm, UserRegisterForm, UserUpdateForm
 from django.views.generic import FormView, CreateView, UpdateView, ListView, DetailView
-from django.contrib.auth  import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from .models import User, Follow
+from .models import User
 
 
 class LoginView(FormView):
@@ -76,10 +76,7 @@ class FollowUser(LoginRequiredMixin, View):
         from_user = request.user
         to_user = get_object_or_404(User, pk=user_pk)
         if from_user not in to_user.followers.all():
-            Follow.objects.create(
-                to_user=to_user,
-                from_user=from_user
-            )
+            to_user.followers.add(from_user)
         return redirect("index")
 
 
@@ -89,9 +86,5 @@ class UnfollowUser(LoginRequiredMixin, View):
         from_user = request.user
         to_user = get_object_or_404(User, pk=user_pk)
         if from_user in to_user.followers.all():
-            follow = Follow.objects.get(
-                from_user=from_user,
-                to_user__id = user_pk
-            )
-            follow.delete()
+            to_user.followers.remove(from_user)
         return redirect("index")
