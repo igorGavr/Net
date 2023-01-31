@@ -1,8 +1,9 @@
 from django.urls import path
 from apps.posts.views import (
-    IndexPage, UserPostsView, PostCreateView, PostDetailView,
-    archivate_post, delete_post,
-    PostUpdateView, FollowinPostsView, like_post, unlike_post
+    IndexPage, UserPostsView, PostCreateView,
+    PostDetailView, archivate_post, delete_post,
+    PostUpdateView, FollowinPostsView, like_post,
+    unlike_post, CommentCreateView
 )
 
 urlpatterns = [
@@ -17,4 +18,6 @@ urlpatterns = [
 
     path("post/like/<int:post_pk>/", like_post, name="like_post"),
     path("post/unlike/<int:post_pk>/", unlike_post, name="unlike_post"),
+
+    path("post/create_comment/<int:post_id>/", CommentCreateView.as_view(), name="create_comment"),
 ]

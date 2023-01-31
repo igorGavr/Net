@@ -1,6 +1,6 @@
 from django import forms
 
-from apps.posts.models import Post
+from apps.posts.models import Post, Comment
 
 
 class PostCreateForm(forms.ModelForm):
@@ -29,8 +29,12 @@ class PostUpdateForm(forms.ModelForm):
         model = Post
         fields = [
             "description",
+            "image",
         ]
         widgets = {
+            "image": forms.FileInput(
+                attrs={"class": "form-control"}
+            ),
             "description": forms.Textarea(
                 attrs= {"class":"form-control"}
             )
@@ -39,3 +43,16 @@ class PostUpdateForm(forms.ModelForm):
             "description": "Описание публикации"
         }
 
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["content"]
+        widgets = {
+            "content": forms.Textarea(
+                attrs={"class":"form-control"}
+            )
+        }
+        labels = {
+            "content": "Коментар"
+        }

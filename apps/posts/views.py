@@ -9,8 +9,8 @@ from django.contrib.auth.decorators import login_required
 # Create your views here
 
 
-from apps.posts.models import Post
-from .forms import PostCreateForm, PostUpdateForm
+from apps.posts.models import Post, Comment
+from .forms import PostCreateForm, PostUpdateForm, CommentForm
 
 
 class IndexPage(TemplateView):
@@ -56,6 +56,7 @@ class PostDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = PostUpdateForm(instance=self.get_object())
+        context["comment_form"] = CommentForm()
         return context
 
 
@@ -128,3 +129,21 @@ def unlike_post(request, post_pk):
     if user in post.likes.all():
         post.likes.remove(user)
     return redirect("index")
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        post_id = self.kwargs.get("post_id")
+        post = get_object_or_404(Post, id = post_id)
+        instance = form.save(commit=False)
+        instance.author = self.request.user
+        instance.post = post
+        instance.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        pk = self.kwargs.get("post_id")
+        return reverse_lazy("post_detail", kwargs={"pk":pk})

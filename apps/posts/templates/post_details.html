@@ -131,40 +131,40 @@
                                     </div>
                                 </div>
                             </div>
-                            {#                            <div class="post-footer">#}
-                            {#                                <form action="{% url 'create_comment' post.id %}" method="post">#}
-                            {#                                    {% csrf_token %}#}
-                            {#                                    {{ comment_form }}#}
-                            {#                                    <button class="btn btn-primary w-15" type="submit">#}
-                            {#                                        Опубликовать#}
-                            {#                                    </button>#}
-                            {#                                </form>#}
-                            {##}
-                            {#                                <ul class="comments-list">#}
-                            {##}
-                            {#                                    {% for comment in post.post_comments.all %}#}
-                            {#                                        <li class="comment">#}
-                            {##}
-                            {#                                            <a class="pull-left" href="#">#}
-                            {#                                                {% if comment.author.avatar %}#}
-                            {#                                                    <img class="avatar" src="{{ comment.author.avatar.url }}"#}
-                            {#                                                         alt="avatar">#}
-                            {#                                                {% else %}#}
-                            {#                                                    <img src="/static/img/icons/user_profile.png" alt="" class="avatar">#}
-                            {#                                                {% endif %}#}
-                            {#                                            </a>#}
-                            {#                                            <div class="comment-body">#}
-                            {#                                                <div class="comment-heading">#}
-                            {#                                                    <h4 class="user">{{ comment.author.username }}</h4>#}
-                            {#                                                    <h5 class="time">10 seconds ago</h5>#}
-                            {#                                                </div>#}
-                            {#                                                <p> {{ comment.content }} </p>#}
-                            {#                                            </div>#}
-                            {#                                        </li>#}
-                            {#                                    {% endfor %}#}
-                            {##}
-                            {#                                </ul>#}
-                            {#                            </div>#}
+                            <div class="post-footer">
+                                <form action="{% url 'create_comment' post.id %}" method="post">
+                                    {% csrf_token %}
+                                    {{ comment_form }}
+                                    <button class="btn btn-primary w-15" type="submit">
+                                        Опубликовать
+                                    </button>
+                                </form>
+
+                                <ul class="comments-list">
+
+                                    {% for comment in post.post_comments.all %}
+                                        <li class="comment">
+
+                                            <a class="pull-left" href="#">
+                                                {% if comment.author.avatar %}
+                                                    <img class="avatar" src="{{ comment.author.avatar.url }}"
+                                                         alt="avatar">
+                                                {% else %}
+                                                    <img src="/static/img/icons/user_profile.png" alt="" class="avatar">
+                                                {% endif %}
+                                            </a>
+                                            <div class="comment-body">
+                                                <div class="comment-heading">
+                                                    <h4 class="user">{{ comment.author.username }}</h4>
+                                                    <h5 class="time">10 seconds ago</h5>
+                                                </div>
+                                                <p> {{ comment.content }} </p>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     </di>
