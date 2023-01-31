@@ -66,7 +66,7 @@ class UsersSearchListView(ListView):
 
 
 class UserProfileView(LoginRequiredMixin, DetailView):
-    template_name = "user_profile.html"
+    template_name = "user_profile_detail.html"
     model = User
     queryset = User.objects.all()
 
