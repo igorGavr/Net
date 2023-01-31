@@ -1,5 +1,6 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import LoginForm, UserRegisterForm, UserUpdateForm
+from .forms import LoginForm, UserRegisterForm, UserUpdateForm, UserPasswordChangeForm
 from django.views.generic import FormView, CreateView, UpdateView, ListView, DetailView
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
@@ -91,3 +92,23 @@ class UnfollowUser(LoginRequiredMixin, View):
             messages.add_message(request, messages.SUCCESS, "вы успешно отписались")
             to_user.followers.remove(from_user)
         return redirect("index")
+
+
+@login_required
+def change_password(request):
+    if request.method == "POST":
+        form = UserPasswordChangeForm(request.user, request.POST)
+        print(request.POST)
+        if form.is_valid():
+            form.save()
+            logout(request)
+            return redirect("sign_in")
+        return render(request, "password_change.html", {"form": form})
+    else:
+        form = UserPasswordChangeForm(request.user)
+        context = {
+            "form": form
+        }
+        return render(request, "password_change.html", context)
+
+
