@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import LoginForm, UserRegisterForm, UserUpdateForm, UserPasswordChangeForm
 from django.views.generic import FormView, CreateView, UpdateView, ListView, DetailView
@@ -112,3 +113,50 @@ def change_password(request):
         return render(request, "password_change.html", context)
 
 
+
+
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.template.loader import render_to_string
+from django.core.mail import send_mail, BadHeaderError
+from django.conf import settings
+
+
+def password_reset_request(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            user = User.objects.get(email=email)
+            subject = "Восстановления пароля."
+            email_template_name = "password_reset_email.html"
+            reset_data = {
+                "email": user.email,
+                # наш хост
+                "domain": "127.0.0.1:8000",
+                "site_name": "Website",
+                # кодуємо айдішку
+                "uid": urlsafe_base64_encode(force_bytes(user.id)),
+                "user": user,
+                # генеруємо токен
+                "token": default_token_generator.make_token(user),
+                "protocol": "http",
+            }
+            email = render_to_string(email_template_name, reset_data)
+            print(email)
+            try:
+                send_mail(
+                    subject=subject,
+                    message=email,
+                    recipient_list=[user.email],
+                    from_email=settings.EMAIL_HOST_USER,
+                    fail_silently=True,
+
+                )
+            except BadHeaderError:
+                return HttpResponse("Invalid Header")
+            return redirect(reverse_lazy("password_reset_done"))
+    else:
+        form = PasswordResetForm()
+    return render(request, "password_reset.html", {"form": form})
